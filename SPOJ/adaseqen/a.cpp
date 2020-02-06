@@ -1,3 +1,5 @@
+//dp with no recursion
+
 #include <bits/stdc++.h>
 #define maxl 2025
 #define charl 26
