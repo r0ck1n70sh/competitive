@@ -2,67 +2,62 @@
 using namespace std;
 
 int main(){
-	int t,n,k;
-	string s;
-	scanf("%d", &t);
-	
+	int t; cin>>t;
 	while(t--){
-		scanf("%d%d\n",&n, &k);
-		cin>>s;
-		vector<pair<int, int>> arr;
+		int n, k; cin>>n>>k;
+		string s; cin>>s;
 		
-		int sum_cut=0, cnt=0, cut=0, sum_z=0;
-		for(int i=0; i<n; i++){
-			if(i==n-1 || s[i]!=s[i+1]){
-				if(s[i]=='0'){
-					if(i==n-1) --cut;
-					
-					arr.push_back({cnt+1, cut+1});
-					sum_cut+= cut+1;
-					cnt=0;
-					cut=0;
-					sum_z++;
-				}
-				else
-					cut++;
+		int start=0;
+		while(s[start]=='0')
+			start++;
+			
+		int end= n-1;
+		while(s[end]=='0')
+			end--;
+		
+		vector<int> offs;	
+		int notAdded=1, stoff=start, endoff= n-1-end;
+		if(k%2==0 && stoff!=0 && endoff!=0){
+			notAdded=0;
+			offs.push_back(stoff+endoff);
+		}
+		
+		int cnt=0, sumz=stoff+endoff;
+		
+		for(int i=start; i<=end; i++){
+			if(s[i]=='0'){
+				cnt++;
+				sumz++;
 			}
 			else{
-				if(s[i]=='0') {
-					cnt++;
-					sum_z++;
-				}
+				if(cnt>0)
+					offs.push_back(cnt);
+				cnt=0;
 			}
-			
-			//printf("%d:{%d,%d}\n", i, cnt, cut);
 		}
-		
-		//cout<<s<<endl;
-		//for(int i=0; i<arr.size(); i++)
-			//printf("%d:%d ", arr[i].first, arr[i].second);
-		//printf("\n");
 		
 		if(k==0){
-			printf("%d\n", sum_z);
-			continue;
-		}
-				
-		if(k==n-1 || sum_cut<=k){
-			printf("0\n");
+			printf("%d\n", sumz);
 			continue;
 		}
 		
-		sort(arr.begin(), arr.end());
-		
-		int res=0, i=0, sum_cut1= sum_cut;
-		while(sum_cut1>k){
-			res+=arr[i].first;
-			sum_cut1-=arr[i].second;
-			i++;
+		if(k==1){
+			printf("%d\n", sumz - max(stoff, endoff));
+			continue;
 		}
 		
-		if(sum_cut-sum_cut1<=k)
-			printf("%d\n", min(res, sum_z-res));
+		sort(offs.begin(), offs.end(), greater<int>());
+		
+		int sumct= 0;
+		if(k%2)
+			sumct+= max(stoff, endoff);
+		
+		if(k%2 ==0 && notAdded)
+			offs[k/2-1] = max({offs[k/2-1], stoff, endoff});
 			
-		else printf("%d\n", res);
+		for(int i=0; i<k/2; i++)
+			sumct += offs[i];
+			
+		printf("%d\n", sumz-sumct);
 	}
 }
